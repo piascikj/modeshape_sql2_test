@@ -1,8 +1,8 @@
 package org.fincayra.modeshape;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 import javax.jcr.ItemExistsException;
@@ -21,15 +21,16 @@ import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.nodetype.InvalidNodeTypeDefinitionException;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
-import javax.jcr.nodetype.NodeDefinitionTemplate;
 import javax.jcr.nodetype.NodeTypeExistsException;
 import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.nodetype.NodeTypeTemplate;
 import javax.jcr.nodetype.PropertyDefinitionTemplate;
 import javax.jcr.query.InvalidQueryException;
 import javax.jcr.query.Query;
+import javax.jcr.query.QueryResult;
 import javax.jcr.version.VersionException;
 
+import org.apache.commons.io.FileUtils;
 import org.modeshape.common.collection.Problem;
 import org.modeshape.jcr.JcrConfiguration;
 import org.modeshape.jcr.JcrEngine;
@@ -37,23 +38,44 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-public class SQL2Test {
-	public SQL2Test() {
+public class SQL2App {
+	private SQL2App() {
 		super();
+		this.destroy();
 	}
+	
 	private Repository repository;
 	private JcrEngine engine;
-	private static Logger LOGGER = LoggerFactory.getLogger(SQL2Test.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(SQL2App.class);
+	private static final SQL2App instance = new SQL2App();
+	
+	public static final SQL2App getInstance() {
+		return instance;
+	}
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		SQL2Test testApp = new SQL2Test();
+		SQL2App testApp = getInstance();
 		testApp.runTest();
 	}
-	
+
+	public void destroy() {
+		this.stop();
+		File file = new File("fincayra-store");
+		try {
+			FileUtils.deleteDirectory(file);
+			LOGGER.debug("Path Deleted:{}",file.getAbsolutePath());		
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 	public void runTest() {
-		start();
+		start("configRepository.xml");
 		
 		//Now lets add some types and properties
 		configTypes();
@@ -65,22 +87,22 @@ public class SQL2Test {
 		runQuery();
 		
 		//Shutdown the engine
-		destroy();
+		stop();
 		
 		//Restart the engine
-        start();		
+        start("configRepository.xml");		
 
         //Run a query
         runQuery();
         
-        destroy();
+        stop();
 	}
 	
-	public void start() {
+	public void start(String config) {
 		// Load the configuration from a file, as provided by the user interface ...
         JcrConfiguration configuration = new JcrConfiguration();
         try {
-			configuration.loadFrom(this.getClass().getClassLoader().getResourceAsStream("configRepository.xml"));
+			configuration.loadFrom(this.getClass().getClassLoader().getResourceAsStream(config));
 		} catch (MalformedURLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -111,7 +133,8 @@ public class SQL2Test {
 		}
 		
 	}
-	public void destroy() {
+	
+	public void stop() {
         if (engine == null) return;
         try {
             // Tell the engine to shut down, and then wait up to 5 seconds for it to complete...
@@ -126,12 +149,14 @@ public class SQL2Test {
         }
 	}
 	
-	void runQuery() {
+	QueryResult runQuery() {
 		Session session = null;
+		QueryResult r = null;
 		try {
 			session = repository.login();
 			Query q = session.getWorkspace().getQueryManager().createQuery("SELECT * FROM [fincayra:User] as user WHERE user.active=cast('true' as boolean)", Query.JCR_SQL2);
-			NodeIterator ni = q.execute().getNodes();
+			r = q.execute();
+			NodeIterator ni = r.getNodes();
 			
 			while (ni.hasNext()) {
 				Node node = ni.nextNode();
@@ -150,6 +175,7 @@ public class SQL2Test {
 			session.logout();
 		}
 		
+		return r;
 		
 	}
 	
@@ -196,8 +222,9 @@ public class SQL2Test {
 		}
 	}
 	void configTypes() {
+		Session session = null;
 		try {
-			Session session = repository.login() ;
+			session = repository.login() ;
 			Workspace workspace = session.getWorkspace();
 			
 			NamespaceRegistry nsReg = workspace.getNamespaceRegistry();
@@ -207,7 +234,6 @@ public class SQL2Test {
 				LOGGER.debug("Found namespace at " + uri);
 			} catch(Exception e) {
 				nsReg.registerNamespace("fincayra", "http://www.fincayra.org/");
-				session.save();
 			}
 
 			// Obtain the ModeShape-specific node type manager ...
@@ -224,6 +250,7 @@ public class SQL2Test {
 
 			// Register the custom node type
 			nodeTypeManager.registerNodeType(nodeType,true);
+			session.save();
 		} catch (LoginException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -242,6 +269,9 @@ public class SQL2Test {
 		} catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			session.logout();
+			
 		}
 	}
 	
@@ -249,7 +279,7 @@ public class SQL2Test {
 		PropertyDefinitionTemplate property = null;
 		try {
 			property = nodeTypeManager.createPropertyDefinitionTemplate();
-			property.setName("name");
+			property.setName(name);
 			property.setMultiple(false);
 			property.setRequiredType(type);
 		} catch (UnsupportedRepositoryOperationException e) {

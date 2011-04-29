@@ -7,11 +7,11 @@
 
 	<mode:repositories>
 
-		<mode:repository jcr:name="test-repository"	mode:source="InfinispanSource">
+		<mode:repository jcr:name="test-repository"	mode:source="JPASource">
 
 			
 			<mode:options jcr:primaryType="mode:options">
-				<systemSourceName jcr:primaryType="mode:option" mode:value="system@InfinispanSource"/>
+				<systemSourceName jcr:primaryType="mode:option" mode:value="system@JPASource"/>
 			</mode:options>
  			
 		</mode:repository>
@@ -45,5 +45,6 @@
 			mode:defaultWorkspaceName="objects"
 			mode:showSql="false"
 			mode:autoGenerateSchema="update"
-			mode:creatingWorkspacesAllowed="true"/>	</mode:sources>
+			mode:creatingWorkspacesAllowed="true"/>	
+	</mode:sources>
 </configuration>
