@@ -49,6 +49,9 @@ public class SQL2App {
 	private static Logger LOGGER = LoggerFactory.getLogger(SQL2App.class);
 	private static final SQL2App instance = new SQL2App();
 	
+	public static final String CAST_QUERY = "SELECT * FROM [fincayra:User] as user WHERE user.active=cast('true' as boolean)";
+	public static final String NAME_QUERY = "SELECT * FROM [fincayra:User] as user WHERE user.name='test1'";
+	
 	public static final SQL2App getInstance() {
 		return instance;
 	}
@@ -84,7 +87,7 @@ public class SQL2App {
 		addData();
 		
 		//Run query
-		runQuery();
+		runQuery(CAST_QUERY);
 		
 		//Shutdown the engine
 		stop();
@@ -93,7 +96,7 @@ public class SQL2App {
         start("configRepository.xml");		
 
         //Run a query
-        runQuery();
+        runQuery(CAST_QUERY);
         
         stop();
 	}
@@ -149,12 +152,12 @@ public class SQL2App {
         }
 	}
 	
-	QueryResult runQuery() {
+	QueryResult runQuery(String query) {
 		Session session = null;
 		QueryResult r = null;
 		try {
 			session = repository.login();
-			Query q = session.getWorkspace().getQueryManager().createQuery("SELECT * FROM [fincayra:User] as user WHERE user.active=cast('true' as boolean)", Query.JCR_SQL2);
+			Query q = session.getWorkspace().getQueryManager().createQuery(query, Query.JCR_SQL2);
 			r = q.execute();
 			NodeIterator ni = r.getNodes();
 			

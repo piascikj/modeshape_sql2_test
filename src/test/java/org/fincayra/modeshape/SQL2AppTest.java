@@ -14,6 +14,7 @@ public class SQL2AppTest {
 	private static final String CLUSTER_BOTH_INFINISPAN = "clusterBoth.xml";
 	private static final String HSQLDB_SOURCE = "hsqldbSource.xml";
 	private static final String HSQLDB_SOURCE_MODESHAPE_CLUSTER = "hsqldbSourceModeShapeCluster.xml";
+
 	private static SQL2App testApp = SQL2App.getInstance();
 	
 	public SQL2AppTest() {
@@ -37,10 +38,10 @@ public class SQL2AppTest {
 	}
 	
 	@Test
-	public void testSQL2_CLUSTER_BOTH_INFINISPAN() {
+	public void testSQL2_name_CLUSTER_BOTH_INFINISPAN() {
 
 		//Run query
-		QueryResult result = inprocessTest(CLUSTER_BOTH_INFINISPAN);
+		QueryResult result = inprocessTest(CLUSTER_BOTH_INFINISPAN, SQL2App.NAME_QUERY);
 		
 		//This should return at least one result, More if the repository wasn't deleted
 		try {
@@ -53,10 +54,10 @@ public class SQL2AppTest {
 	}
 	
 	@Test
-	public void testSQL2_HSQLDB_SOURCE() {
+	public void testSQL2_name_HSQLDB_SOURCE() {
 
 		//Run query
-		QueryResult result = inprocessTest(HSQLDB_SOURCE);
+		QueryResult result = inprocessTest(HSQLDB_SOURCE, SQL2App.NAME_QUERY);
 		
 		//This should return at least one result, More if the repository wasn't deleted
 		try {
@@ -69,10 +70,10 @@ public class SQL2AppTest {
 	}
 	
 	@Test
-	public void testSQL2_HSQLDB_SOURCE_MODESHAPE_CLUSTER() {
+	public void testSQL2_name_HSQLDB_SOURCE_MODESHAPE_CLUSTER() {
 
 		//Run query
-		QueryResult result = inprocessTest(HSQLDB_SOURCE_MODESHAPE_CLUSTER);
+		QueryResult result = inprocessTest(HSQLDB_SOURCE_MODESHAPE_CLUSTER, SQL2App.NAME_QUERY);
 		
 		//This should return at least one result, More if the repository wasn't deleted
 		try {
@@ -85,10 +86,10 @@ public class SQL2AppTest {
 	}	
 	
 	@Test
-	public void testSQL2_CLUSTER_BOTH_INFINISPAN_Shutdown() {
+	public void testSQL2_name_CLUSTER_BOTH_INFINISPAN_Shutdown() {
 		System.out.println("SQL2Infinispan Instance:" + testApp.hashCode());
 		
-		QueryResult result = shutdownTest(CLUSTER_BOTH_INFINISPAN);
+		QueryResult result = shutdownTest(CLUSTER_BOTH_INFINISPAN, SQL2App.NAME_QUERY);
 		
 		//This should return at least one result, More if the repository wasn't deleted
 		try {
@@ -101,9 +102,9 @@ public class SQL2AppTest {
 	}
 	
 	@Test
-	public void testSQL2_HSQLDB_SOURCE_Shutdown() {
+	public void testSQL2_name_HSQLDB_SOURCE_Shutdown() {
 
-		QueryResult result = shutdownTest(HSQLDB_SOURCE);
+		QueryResult result = shutdownTest(HSQLDB_SOURCE, SQL2App.NAME_QUERY);
 		
 		//This should return at least one result, More if the repository wasn't deleted
 		try {
@@ -116,9 +117,26 @@ public class SQL2AppTest {
 	}
 
 	@Test
-	public void testSQL2_HSQLDB_SOURCE_MODESHAPE_CLUSTER_Shutdown() {
+	public void testSQL2_name_HSQLDB_SOURCE_MODESHAPE_CLUSTER_Shutdown() {
 		
-		QueryResult result = shutdownTest(HSQLDB_SOURCE_MODESHAPE_CLUSTER);
+		QueryResult result = shutdownTest(HSQLDB_SOURCE_MODESHAPE_CLUSTER, SQL2App.NAME_QUERY);
+		
+		//This should return at least one result, More if the repository wasn't deleted
+		try {
+			assertTrue("Query result is empty",result.getNodes().getSize() > 0);
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	//--------------------------------------------------------
+	
+	@Test
+	public void testSQL2_cast_CLUSTER_BOTH_INFINISPAN() {
+
+		//Run query
+		QueryResult result = inprocessTest(CLUSTER_BOTH_INFINISPAN, SQL2App.CAST_QUERY);
 		
 		//This should return at least one result, More if the repository wasn't deleted
 		try {
@@ -130,7 +148,85 @@ public class SQL2AppTest {
 		
 	}
 	
-	public QueryResult inprocessTest(String config) {
+	@Test
+	public void testSQL2_cast_HSQLDB_SOURCE() {
+
+		//Run query
+		QueryResult result = inprocessTest(HSQLDB_SOURCE, SQL2App.CAST_QUERY);
+		
+		//This should return at least one result, More if the repository wasn't deleted
+		try {
+			assertTrue("Query result is empty",result.getNodes().getSize() > 0);
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	@Test
+	public void testSQL2_cast_HSQLDB_SOURCE_MODESHAPE_CLUSTER() {
+
+		//Run query
+		QueryResult result = inprocessTest(HSQLDB_SOURCE_MODESHAPE_CLUSTER, SQL2App.CAST_QUERY);
+		
+		//This should return at least one result, More if the repository wasn't deleted
+		try {
+			assertTrue("Query result is empty",result.getNodes().getSize() > 0);
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}	
+	
+	@Test
+	public void testSQL2_cast_CLUSTER_BOTH_INFINISPAN_Shutdown() {
+		System.out.println("SQL2Infinispan Instance:" + testApp.hashCode());
+		
+		QueryResult result = shutdownTest(CLUSTER_BOTH_INFINISPAN, SQL2App.CAST_QUERY);
+		
+		//This should return at least one result, More if the repository wasn't deleted
+		try {
+			assertTrue("Query result is empty",result.getNodes().getSize() > 0);
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	@Test
+	public void testSQL2_cast_HSQLDB_SOURCE_Shutdown() {
+
+		QueryResult result = shutdownTest(HSQLDB_SOURCE, SQL2App.CAST_QUERY);
+		
+		//This should return at least one result, More if the repository wasn't deleted
+		try {
+			assertTrue("Query result is empty",result.getNodes().getSize() > 0);
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	@Test
+	public void testSQL2_cast_HSQLDB_SOURCE_MODESHAPE_CLUSTER_Shutdown() {
+		
+		QueryResult result = shutdownTest(HSQLDB_SOURCE_MODESHAPE_CLUSTER, SQL2App.CAST_QUERY);
+		
+		//This should return at least one result, More if the repository wasn't deleted
+		try {
+			assertTrue("Query result is empty",result.getNodes().getSize() > 0);
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public QueryResult inprocessTest(String config, String query) {
 		testApp.start(config);
 		
 		//Now lets add some types and properties
@@ -140,10 +236,10 @@ public class SQL2AppTest {
 		testApp.addData();
 		
 		//Run query
-		return testApp.runQuery();
+		return testApp.runQuery(query);
 	}
 	
-	public QueryResult shutdownTest(String config) {
+	public QueryResult shutdownTest(String config, String query) {
 		testApp.start(config);
 		
 		//Now lets add some types and properties
@@ -158,6 +254,6 @@ public class SQL2AppTest {
 		testApp.start(config);
 
 		//Run query
-		return testApp.runQuery();	
+		return testApp.runQuery(query);	
 	}
 }

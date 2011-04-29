@@ -1,0 +1,50 @@
+<configuration xmlns:mode="http://www.modeshape.org/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0">
+	<!-- 
+
+      Define the JCR repositories 
+
+      -->
+
+	<mode:repositories>
+
+		<mode:repository jcr:name="test-repository"	mode:source="JPASource">
+
+			
+			<mode:options jcr:primaryType="mode:options">
+				<systemSourceName jcr:primaryType="mode:option" mode:value="system@JPASource"/>
+			</mode:options>
+ 			
+		</mode:repository>
+
+	</mode:repositories>
+
+	<mode:sources jcr:primaryType="nt:unstructured">
+
+		<mode:source jcr:name="InfinispanSource"
+			mode:classname="org.modeshape.connector.infinispan.InfinispanSource"
+			mode:description="The fincayra repository source"
+			mode:defaultworkspaceName="objects"
+			mode:predefinedWorkspaceNames="system, objects"
+			mode:cacheConfigurationName="/grid.xml"
+			mode:updatesAllowed="true"
+			/>
+		
+ 		<mode:source jcr:name="JPASource" mode:classname="org.modeshape.connector.store.jpa.JpaSource"
+			mode:model="Simple"
+			mode:username="sa"
+			mode:password=""
+			mode:maximumConnectionsInPool="30"
+			mode:driverClassName="org.hsqldb.jdbc.JDBCDriver"
+			mode:url="jdbc:hsqldb:file:fincayra-store/source;shutdown=true"
+			mode:dialect="org.hibernate.dialect.HSQLDialect"
+			mode:referentialIntegrityEnforced="true"
+			mode:largeValueSizeInBytes="1000"
+			mode:retryLimit="3"
+			mode:compressData="false"
+			mode:predefinedWorkspaceNames="system, objects"
+			mode:defaultWorkspaceName="objects"
+			mode:showSql="false"
+			mode:autoGenerateSchema="update"
+			mode:creatingWorkspacesAllowed="true"/>	
+	</mode:sources>
+</configuration>
